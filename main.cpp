@@ -43,21 +43,39 @@ ECS<FrameState> ecs;
 FrameState frameState;
 
 // How do we make this better and not reliant on global variables?
-void keyCallback(GLFWwindow* window, int key, int, int action, int){
-	if(action == GLFW_PRESS) {
-		if(key == GLFW_KEY_ESCAPE) {
-			glfwSetWindowShouldClose(window, 1);
-		} else if(key == GLFW_KEY_SPACE) {
-				printEcsInfo(ecs);
-				std::cout << "Last frametime " << (1.0/frameState.time_delta) << "\n";
-		} else if(key == GLFW_KEY_D) {
-			auto numberToRemove = 5000;
-			for(int i = 0; i < numberToRemove; i++) {
-				removeRandomEntity(ecs.entities, ecs.components);
-			}
-			std::cout << "Removed " << numberToRemove << " entities\n";
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	auto press = action == GLFW_PRESS;
+	if(press && key == GLFW_KEY_ESCAPE) {
+		glfwSetWindowShouldClose(window, 1);
+	} else if(press && key == GLFW_KEY_SPACE) {
 			printEcsInfo(ecs);
+			std::cout << "Last frametime " << (1.0/frameState.time_delta) << "\n";
+	} else if(press && key == GLFW_KEY_D) {
+		auto numberToRemove = 5000;
+		for(int i = 0; i < numberToRemove; i++) {
+			removeRandomEntity(ecs.entities, ecs.components);
 		}
+		std::cout << "Removed " << numberToRemove << " entities\n";
+		printEcsInfo(ecs);
+	} else {
+		std::cout << ANSI::GRAY << "glfw key callback\n";
+		std::cout << "\tkey:      " << key << "\n";
+		std::cout << "\tscancode: " << scancode << "\n";
+		std::cout << "\taction:   " << action << "\n";
+		std::cout << "\tmods:     " << mods << "\n" << ANSI::RESET;
+	}
+}
+
+void mouseButtonCallBack(GLFWwindow* window, int button, int action, int mods) {
+	if(false) {
+	} else {
+		std::cout << ANSI::GRAY << "glfw mouse button callback\n";
+		std::cout << "\tbutton:   " << button << "\n";
+		std::cout << "\taction:   " << action << "\n";
+		std::cout << "\tmods:     " << mods << "\n";
+		double x, y;
+		glfwGetCursorPos(window, &x, &y);
+		std::cout << "\tposition: {" << x << "," << y << "}\n" << ANSI::RESET;
 	}
 }
 
@@ -76,6 +94,7 @@ int main() {
 	}
 
 	glfwSetKeyCallback(window, keyCallback);
+	glfwSetMouseButtonCallback(window, mouseButtonCallBack);
 
 	auto prevTime = std::chrono::steady_clock::now();
 	while(!glfwWindowShouldClose(window)) {

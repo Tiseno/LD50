@@ -45,7 +45,7 @@ struct DrawingSystem : System<FrameState> {
 			if(color != nullptr) {
 				glUniform3f(glGetUniformLocation(pointShader.id, "color"), color->c.r, color->c.g, color->c.b);
 			} else {
-				glUniform3f(glGetUniformLocation(pointShader.id, "color"), 1, 1, 1);
+				glUniform3f(glGetUniformLocation(pointShader.id, "color"), 0.2, 0.2, 0.2);
 			}
 			auto size = components.get<Size>(ssd.index);
 			if(size != nullptr) {

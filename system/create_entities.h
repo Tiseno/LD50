@@ -17,20 +17,35 @@ float rf(int min, int max) {
 	return (float)(min + (rand() % (max - min)));
 }
 
+void giveRandomComponent(Entities& entities, Components& components) {
+	Entity e = entities.getRandom();
+	auto f = rf(0,100);
+	if(f < 20) {
+		components.assign(e.index, Velocity{glm::vec2{rf(-10, 10)/100, rf(-10, 10)/100}});
+	} else if(f < 40) {
+		components.assign(e.index, Acceleration{glm::vec2{rf(-10, 10)/100, rf(-10, 10)/100}});
+	} else if(f < 60) {
+		components.assign(e.index, Color{glm::vec3{rf(20, 100)/100, rf(20, 100)/100, rf(20, 100)/100}});
+	} else if(f < 80) {
+		components.assign(e.index, Size{rf(20,50)/10});
+	}
+}
+
 void createRandomEntity(Entities& entities, Components& components) {
 	Entity e = entities.create();
 	components.assign(e.index, Position{glm::vec2{rf(-100, 100)/100, rf(-100, 100)/100}});
-	components.assign(e.index, Velocity{glm::vec2{rf(-10, 10)/10, rf(-10, 10)/10}});
-	components.assign(e.index, Acceleration{glm::vec2{rf(-10, 10)/10, rf(-10, 10)/10}});
-	components.assign(e.index, Color{glm::vec3{rf(0, 100)/100, rf(0, 100)/100, rf(0, 100)/100}});
-	components.assign(e.index, Size{rf(20,50)/10});
+	// components.assign(e.index, Velocity{glm::vec2{rf(-10, 10)/100, rf(-10, 10)/100}});
+	// components.assign(e.index, Acceleration{glm::vec2{rf(-10, 10)/100, rf(-10, 10)/100}});
+	// components.assign(e.index, Color{glm::vec3{rf(20, 100)/100, rf(20, 100)/100, rf(20, 100)/100}});
+	// components.assign(e.index, Size{rf(20,50)/10});
 }
 
 struct CreateEntitiesSystem : System<FrameState> {
 	CreateEntitiesSystem() : System{"CreateEntitiesSystem"} {}
 	void update(Entities& entities, Components& components, FrameState& frameState) override {
-		for(int i = 0; i < 1; i++) {
-			createRandomEntity(entities, components);
+		for(int i = 0; i < 100; i++) {
+			giveRandomComponent(entities, components);
+			// createRandomEntity(entities, components);
 		}
 	}
 };
