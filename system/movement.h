@@ -21,6 +21,7 @@ struct MovementSystem : System<FrameState> {
 			auto velocity = &ssd.data;
 			auto position = components.get<Position>(ssd.index);
 			auto acceleration = components.get<Acceleration>(ssd.index);
+
 			if(position != nullptr) {
 				if(acceleration != nullptr) {
 					velocity->v.x += acceleration->v.x * frameState.time_delta;

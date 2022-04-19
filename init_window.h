@@ -15,8 +15,9 @@ GLFWwindow* init_window() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-	auto hw = 1024;
-	auto window = glfwCreateWindow(hw, hw, "", nullptr, nullptr);
+	auto w = 1424;
+	auto h = 1424;
+	auto window = glfwCreateWindow(w, h, "", nullptr, nullptr);
 
 	if (!window) {
 		cout << "Could not create glfw window!" << endl;
