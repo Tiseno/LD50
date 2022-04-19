@@ -17,11 +17,16 @@
 #include "component/color.h"
 #include "component/size.h"
 #include "component/mutating.h"
+#include "component/missile.h"
 
 #include "init_window.h"
 #include "system/movement.h"
 #include "system/mutating.h"
 #include "system/drawing.h"
+#include "system/missile.h"
+#include "system/particle.h"
+
+#include "util.h"
 
 void printEcsInfo(ECS<FrameState>& ecs) {
 	std::cout << "There are " << ecs.entities.size() << " entities\n";
@@ -61,6 +66,16 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 	}
 }
 
+void createBullet(ECS<FrameState>& ecs, glm::vec2 position, glm::vec2 direction) {
+	Entity e = ecs.entities.create();
+	ecs.components.assign(e.index, Position{position});
+	ecs.components.assign(e.index, Velocity{normOrZero(direction) * 2.f});
+	ecs.components.assign(e.index, Acceleration{glm::vec2{0, 0}});
+	ecs.components.assign(e.index, Size{4});
+	ecs.components.assign(e.index, Color{glm::vec3{1,0.5,0}});
+	ecs.components.assign(e.index, Missile{1, 0});
+}
+
 void mouseButtonCallBack(GLFWwindow* window, int button, int action, int mods) {
 	std::cout << ANSI::GRAY << "glfw mouse button callback\n";
 	std::cout << "\tbutton:   " << button << "\n";
@@ -69,6 +84,8 @@ void mouseButtonCallBack(GLFWwindow* window, int button, int action, int mods) {
 	double x, y;
 	glfwGetCursorPos(window, &x, &y);
 	std::cout << "\tposition: {" << x << "," << y << "}\n" << ANSI::RESET;
+
+	createBullet(ecs, {0, 0}, {1, 2});
 }
 
 Entity createPlayer(ECS<FrameState>& ecs) {
@@ -89,10 +106,6 @@ void createMutatingEntity(ECS<FrameState>& ecs) {
 
 std::ostream &operator<<(std::ostream &os, glm::vec2 const& m) {
 	return os << ANSI::YELLOW << "glm::vec2" << "{" << m.x << " " << m.y << "}" << ANSI::RESET;
-}
-
-glm::vec2 normOrZero(glm::vec2 v) {
-	return v.x == 0 && v.y == 0 ? v : glm::normalize(v);
 }
 
 void playerControls(GLFWwindow* window, ECS<FrameState>& ecs, Entity player) {
@@ -126,6 +139,8 @@ int main() {
 
 	ecs.systems.push_back(new MovementSystem());
 	ecs.systems.push_back(new MutatingSystem());
+	ecs.systems.push_back(new MissileSystem());
+	ecs.systems.push_back(new ParticleSystem());
 	ecs.systems.push_back(new DrawingSystem(window));
 
 	for(size_t i = 0; i < 10000; i++) {
@@ -137,13 +152,13 @@ int main() {
 
 	Entity player = createPlayer(ecs);
 
-	auto prevTime = std::chrono::steady_clock::now();
+	auto prev_time = std::chrono::steady_clock::now();
 	while(!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		playerControls(window, ecs, player);
-		auto nowTime = std::chrono::steady_clock::now();
-		double time_delta = std::chrono::duration<double>(nowTime - prevTime).count();
-		prevTime = nowTime;
+		auto now_time = std::chrono::steady_clock::now();
+		double time_delta = std::chrono::duration<double>(now_time - prev_time).count();
+		prev_time = now_time;
 		frameState = {time_delta};
 		ecs.update(frameState);
 	}

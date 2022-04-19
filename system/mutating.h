@@ -14,12 +14,7 @@
 #include "../component/size.h"
 #include "../component/mutating.h"
 
-float rf(int min, int max) {
-	if (min == max) {
-		return (float)min;
-	}
-	return (float)(min + (rand() % abs(max - min)));
-}
+#include "../util.h"
 
 void giveRandomComponent(EntityIndex index, Entities& entities, Components& components) {
 	auto f = rf(0,1000);
