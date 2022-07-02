@@ -78,6 +78,9 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 		for(int i = 0; i < AM; i++) {
 			removeRandomEntity(ecs.entities, ecs.components);
 		}
+	} else if (press && key == GLFW_KEY_F5) {
+		std::cout << "Reloading shaders...\n";
+		ShaderProgram::reload();
 	} else {
 		std::cout << ANSI::GRAY << "glfw key callback\n";
 		std::cout << "\tkey:      " << key << "\n";
