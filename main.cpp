@@ -33,17 +33,32 @@ void printEcsInfo(ECS<FrameState>& ecs) {
 	std::cout << "\tReserved space for " << ecs.entities.entities.capacity() << "\n";
 	std::cout << "\tUsed space of " << ecs.entities.entities.size() << "\n";
 	std::cout << "\tFree indexes " << ecs.entities.freeEntityIndexes.size() << "\n";
+
+	std::cout << ecs.components.getPool<Acceleration>() << "\n";
+	std::cout << ecs.components.getPool<Color>() << "\n";
+	// std::cout << ecs.components.getPool<Inertia>() << "\n";
+	std::cout << ecs.components.getPool<Missile>() << "\n";
+	std::cout << ecs.components.getPool<Mutating>() << "\n";
+	std::cout << ecs.components.getPool<Particle>() << "\n";
+	std::cout << ecs.components.getPool<Position>() << "\n";
+	// std::cout << ecs.components.getPool<Shape>() << "\n";
+	std::cout << ecs.components.getPool<Size>() << "\n";
+	std::cout << ecs.components.getPool<Velocity>() << "\n";
 }
 
 void removeRandomEntity(Entities& entities, Components& components) {
+	cout << "Removing entity ...\n";
 	Entity e = entities.getRandom();
+	if (!e.isValid()) {
+		cout << ANSI::RED << "Entity was not valid\n" << ANSI::RESET;
+		return;
+	}
+	cout << ANSI::GREEN << "Entity was valid\n" << ANSI::RESET;
+
+	// TODO use ecs.remove(e) instead
 	entities.remove(e);
-	components.remove<Position>(e.index);
-	components.remove<Velocity>(e.index);
-	components.remove<Acceleration>(e.index);
-	components.remove<Color>(e.index);
-	components.remove<Size>(e.index);
-	components.remove<Mutating>(e.index);
+	components.removeAll(e.index);
+	cout << "Entity was removed!\n";
 }
 
 ECS<FrameState> ecs;
@@ -52,11 +67,17 @@ FrameState frameState;
 // How do we make this better and not reliant on global variables?
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	auto press = action == GLFW_PRESS;
-	if(press && key == GLFW_KEY_ESCAPE) {
+	if (press && key == GLFW_KEY_ESCAPE) {
 		glfwSetWindowShouldClose(window, 1);
-	} else if(press && key == GLFW_KEY_SPACE) {
+	} else if (press && key == GLFW_KEY_SPACE) {
 			printEcsInfo(ecs);
 			std::cout << "Last frametime " << (1.0/frameState.time_delta) << "\n";
+	} else if (press && key == GLFW_KEY_DELETE) {
+		auto AM = 100;
+		std::cout << "Removing " << AM << " random entities\n";
+		for(int i = 0; i < AM; i++) {
+			removeRandomEntity(ecs.entities, ecs.components);
+		}
 	} else {
 		std::cout << ANSI::GRAY << "glfw key callback\n";
 		std::cout << "\tkey:      " << key << "\n";

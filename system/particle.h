@@ -22,9 +22,9 @@ struct ParticleSystem : System<FrameState> {
 		for(auto& ssd : components.getPool<Particle>()->sparseSet.dense) {
 			ssd.data.clock += frameState.time_delta;
 			if (ssd.data.clock > ssd.data.ttl) {
-				// TODO ML mark for deletion instead
-				components.get<Velocity>(ssd.index)->v *= 0;
-				components.get<Color>(ssd.index)->c *= 0;
+				// TODO remove the entity as well
+				// entities.remove(e);
+				components.removeAll(ssd.index);
 			}
 		}
 	}
